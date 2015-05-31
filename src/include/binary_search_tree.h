@@ -7,7 +7,6 @@
 
 #ifndef INCLUDE_BINARY_SEARCH_TREE_H_
 #define INCLUDE_BINARY_SEARCH_TREE_H_
-#include <stack>
 struct bst_node_base {
 	bst_node_base* lchild;
 	bst_node_base* rchild;
@@ -131,19 +130,31 @@ public:
 	}
 	void in_order_traverse()
 	{
-		std::stack<bst_node<T>*> stack;
-		bst_node<T>* r = root;
-		while (!stack.empty() || r != &nil) {
-			if (r != &nil) {
-				stack.push(r);
-				r = (bst_node<T>*) r->lchild;
-			} else {
-				//pop out
-				r = stack.top();
-				std::cout << r->data << " ";
-				stack.pop();
-				r = (bst_node<T>*) r->rchild;
+		bst_node<T> *pre = &nil;
+		bst_node<T> *cur = root;
+		bst_node<T> *next = cur->get_lchild();
+		while (cur != &nil) {
+			if (cur->parent == pre) {
+				next = cur->get_lchild();
+				if (next == &nil) {
+					std::cout << cur->data << " ";
+					next = cur->get_rchild();
+					if (next == &nil) {
+						next = cur->get_parent();
+					}
+				}
+
+			} else if (cur->lchild == pre) {
+				std::cout << cur->data << " ";
+				next = cur->get_rchild();
+				if (next == &nil) {
+					next = cur->get_parent();
+				}
+			} else {//cur->rchild == pre
+				next = cur->get_parent();
 			}
+			pre = cur;
+			cur = next;
 		}
 	}
 	virtual ~binary_search_tree()
